@@ -5,190 +5,313 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="theme-color" content="#101827">
-<title>Thanaphon Video Downloader</title>
+
+<title>THANAPHON VIDEO DOWNLOADER</title>
 
 <style>
 *{box-sizing:border-box}
+
 body{
  margin:0;
  font-family:Arial,sans-serif;
- background:linear-gradient(135deg,#101827,#19365b);
+ background:linear-gradient(140deg,#101827,#173b67);
  color:white;
  min-height:100vh;
 }
-header{text-align:center;padding:35px 15px}
+
+header{
+ text-align:center;
+ padding:35px 15px 25px;
+}
+
 .logo{font-size:48px}
-h1{font-size:23px}
-header p{color:#b6c7dc}
-.container{max-width:620px;margin:auto;padding:15px}
+
+h1{font-size:23px;margin:12px 0}
+
+header p{color:#b8c9df;font-size:14px}
+
+.container{
+ max-width:650px;
+ margin:auto;
+ padding:15px;
+}
+
 .panel{
- background:white;color:#172033;
- padding:24px;border-radius:20px;
- box-shadow:0 15px 40px #0005;
+ background:#fff;
+ color:#172033;
+ padding:23px;
+ border-radius:20px;
+ box-shadow:0 15px 45px #0005;
 }
+
+h2{font-size:21px}
+
+label{
+ display:block;
+ margin-top:17px;
+ font-weight:bold;
+ font-size:14px;
+}
+
 input{
- width:100%;padding:16px;
+ width:100%;
+ padding:15px;
+ margin-top:9px;
  border:1px solid #ccd5e1;
- border-radius:10px;font-size:15px;
- margin:12px 0;
+ border-radius:10px;
+ font-size:14px;
 }
+
 button{
- width:100%;padding:15px;
- border:0;border-radius:10px;
- background:#2563eb;color:white;
- font-size:16px;font-weight:bold;
- margin-top:10px;
+ width:100%;
+ padding:15px;
+ border:0;
+ border-radius:10px;
+ background:#2563eb;
+ color:white;
+ font-size:15px;
+ font-weight:bold;
+ margin-top:12px;
+ cursor:pointer;
 }
+
 button:disabled{opacity:.5}
+
 .green{background:#059669}
-video{width:100%;margin-top:20px;border-radius:12px;background:#000}
-#status{margin-top:15px;line-height:1.7;font-size:14px;overflow-wrap:anywhere}
-.note{
- background:#eff6ff;color:#1e40af;
- padding:13px;border-radius:10px;
- font-size:13px;margin-top:20px;
- line-height:1.6
+.dark{background:#334155}
+
+video,iframe{
+ width:100%;
+ border:0;
+ border-radius:12px;
+ margin-top:18px;
+ background:#000;
 }
-footer{text-align:center;padding:25px;color:#b6c7dc;font-size:12px}
+
+video{max-height:380px}
+iframe{height:320px}
+
+#status{
+ margin-top:15px;
+ padding:13px;
+ background:#eff6ff;
+ color:#1e40af;
+ border-radius:10px;
+ font-size:13px;
+ line-height:1.6;
+ overflow-wrap:anywhere;
+}
+
 .hidden{display:none}
+
+.info{
+ background:#f1f5f9;
+ color:#475569;
+ padding:13px;
+ border-radius:10px;
+ font-size:12px;
+ line-height:1.7;
+ margin-top:18px;
+}
+
+footer{
+ text-align:center;
+ padding:25px;
+ color:#a9bdd6;
+ font-size:12px;
+}
 </style>
 </head>
 
 <body>
 
 <header>
-<div class="logo">🎬</div>
-<h1>THANAPHON VIDEO DOWNLOADER</h1>
-<p>Online Video Downloader</p>
+ <div class="logo">🎬</div>
+ <h1>THANAPHON VIDEO DOWNLOADER</h1>
+ <p>ONLINE VIDEO PREVIEW & DOWNLOAD</p>
 </header>
 
 <div class="container">
 <div class="panel">
 
 <h2>ดาวน์โหลดวิดีโอออนไลน์</h2>
-<p>วางลิงก์วิดีโอหรือ URL เว็บไซต์</p>
+<p>ใส่ลิงก์เว็บไซต์หรือ URL วิดีโอ</p>
 
-<input id="url" type="url"
-placeholder="https://example.com/video.mp4">
+<label>1. ลิงก์เว็บไซต์ต้นทาง</label>
+<input
+ id="pageURL"
+ type="url"
+ placeholder="https://example.com/video"
+>
 
-<button id="detect" onclick="detectVideo()">
-🔍 ตรวจจับวิดีโอ
+<button onclick="previewPage()">
+🔍 ตรวจสอบและดูวิดีโอ
 </button>
 
 <div id="status" aria-live="polite">
-พร้อมใช้งาน กรุณาวางลิงก์วิดีโอ
+พร้อมใช้งาน กรุณาวางลิงก์เว็บไซต์
 </div>
 
-<video id="player" controls playsinline
-preload="metadata" class="hidden"></video>
+<video id="player"
+ controls
+ playsinline
+ preload="metadata"
+ class="hidden">
+</video>
 
-<button id="download" class="green hidden"
-onclick="downloadVideo()">
+<iframe id="webPreview"
+ class="hidden"
+ title="ตัวอย่างหน้าเว็บไซต์"
+ allow="fullscreen"
+ referrerpolicy="strict-origin-when-cross-origin">
+</iframe>
+
+<hr style="border:0;border-top:1px solid #e2e8f0;margin:25px 0">
+
+<label>2. ลิงก์ไฟล์วิดีโอโดยตรง (ถ้ามี)</label>
+
+<input
+ id="mediaURL"
+ type="url"
+ placeholder="https://example.com/video.mp4"
+>
+
+<button class="dark" onclick="previewMedia()">
+▶ แสดงตัวอย่างวิดีโอ
+</button>
+
+<button class="green"
+ id="downloadBtn"
+ onclick="downloadVideo()"
+ disabled>
 ⬇ ดาวน์โหลดวิดีโอ
 </button>
 
-<div class="note">
-รองรับไฟล์วิดีโอที่เข้าถึงได้โดยตรง
-เว็บไซต์ที่จำกัด CORS หรือใช้ DRM
-อาจต้องใช้ Backend ที่ได้รับอนุญาต
+<div class="info">
+<strong>รูปแบบที่รองรับ</strong><br>
+MP4 / WebM / MOV / M4V / OGV
+
+<br><br>
+หมายเหตุ: การแสดงตัวอย่างหน้าเว็บไซต์ขึ้นอยู่กับ
+การอนุญาต iframe ของเว็บไซต์ต้นทาง
+การดาวน์โหลดต้องใช้ URL ไฟล์วิดีโอที่เซิร์ฟเวอร์อนุญาต
+และอนุญาต CORS
 </div>
 
 </div>
 </div>
 
-<footer>© 2026 THANAPHON VIDEO DOWNLOADER</footer>
+<footer>
+© 2026 THANAPHON VIDEO DOWNLOADER
+</footer>
 
 <script>
-let videoURL = "";
-let videoType = "";
+const pageURL = document.getElementById("pageURL");
+const mediaURL = document.getElementById("mediaURL");
+const player = document.getElementById("player");
+const iframe = document.getElementById("webPreview");
+const statusBox = document.getElementById("status");
+const downloadBtn = document.getElementById("downloadBtn");
 
-const $ = id => document.getElementById(id);
+let currentMedia = "";
 
 function message(text){
- $("status").textContent = text;
-}
-
-function reset(){
- $("player").pause();
- $("player").removeAttribute("src");
- $("player").load();
- $("player").classList.add("hidden");
- $("download").classList.add("hidden");
- videoURL = "";
- videoType = "";
+ statusBox.textContent = text;
 }
 
 function validURL(value){
  try{
-  const u = new URL(value);
-  return ["http:","https:"].includes(u.protocol) ? u : null;
+  const u = new URL(value.trim());
+  if(!["http:","https:"].includes(u.protocol)) return null;
+  return u.href;
  }catch(e){
   return null;
  }
 }
 
-function detectVideo(){
- reset();
+function clearPreview(){
+ player.pause();
+ player.removeAttribute("src");
+ player.load();
+ player.classList.add("hidden");
 
- const u = validURL($("url").value.trim());
+ iframe.removeAttribute("src");
+ iframe.classList.add("hidden");
 
- if(!u){
-  message("กรุณาใส่ URL ที่ถูกต้อง");
+ currentMedia = "";
+ downloadBtn.disabled = true;
+}
+
+function previewPage(){
+ clearPreview();
+
+ const url = validURL(pageURL.value);
+
+ if(!url){
+  message("กรุณาใส่ URL เว็บไซต์ที่ถูกต้อง");
   return;
  }
 
- videoURL = u.href;
+ pageURL.value = url;
 
- const ext = u.pathname.toLowerCase().split(".").pop();
-
- const extensions = {
-  mp4:"video/mp4",
-  webm:"video/webm",
-  mov:"video/quicktime",
-  m4v:"video/x-m4v",
-  ogv:"video/ogg"
- };
-
- videoType = extensions[ext] || "";
-
- message("กำลังตรวจสอบไฟล์วิดีโอ...");
-
- const player = $("player");
-
- player.onloadedmetadata = () => {
-  message("ตรวจพบวิดีโอสำเร็จ สามารถทดลองเล่นได้");
-  $("download").classList.remove("hidden");
- };
-
- player.onerror = () => {
-  player.classList.add("hidden");
-  message(
-   "ไม่สามารถตรวจจับวิดีโอได้ อาจเป็น URL ของหน้าเว็บ ไม่ใช่ไฟล์วิดีโอโดยตรง หรือเซิร์ฟเวอร์ไม่อนุญาตให้เข้าถึง"
-  );
- };
-
- player.src = videoURL;
+ // ทดลองว่าเป็นไฟล์วิดีโอโดยตรงหรือไม่
+ player.src = url;
  player.classList.remove("hidden");
- player.load();
 
- // ถ้าไฟล์ไม่มีนามสกุล ให้ตรวจสอบ Content-Type
- if(!videoType){
+ player.onloadedmetadata = function(){
+  currentMedia = url;
+  mediaURL.value = url;
+  downloadBtn.disabled = false;
+  message("ตรวจพบไฟล์วิดีโอ สามารถดูตัวอย่างได้");
+ };
+
+ player.onerror = function(){
+  player.classList.add("hidden");
+
+  // แสดงหน้าเว็บไซต์ต้นทาง ถ้าอนุญาต iframe
+  iframe.src = url;
+  iframe.classList.remove("hidden");
+
   message(
-   "กำลังตรวจสอบรูปแบบไฟล์จากเซิร์ฟเวอร์..."
+   "ลิงก์นี้อาจเป็นหน้าเว็บไซต์ ไม่ใช่ไฟล์วิดีโอโดยตรง หากเว็บไซต์อนุญาตจะแสดงตัวอย่างด้านล่าง กรุณาใส่ URL ไฟล์วิดีโอในช่องที่ 2 เพื่อดาวน์โหลด"
   );
+ };
+}
+
+function previewMedia(){
+ clearPreview();
+
+ const url = validURL(mediaURL.value);
+
+ if(!url){
+  message("กรุณาใส่ URL ไฟล์วิดีโอที่ถูกต้อง");
+  return;
  }
+
+ player.src = url;
+ player.classList.remove("hidden");
+
+ player.onloadedmetadata = function(){
+  currentMedia = url;
+  downloadBtn.disabled = false;
+  message("พบไฟล์วิดีโอแล้ว สามารถเล่นและดาวน์โหลดได้");
+ };
+
+ player.onerror = function(){
+  message(
+   "ไม่สามารถเล่นวิดีโอได้ กรุณาตรวจสอบ URL และสิทธิ์การเข้าถึง"
+  );
+ };
 }
 
 async function downloadVideo(){
- if(!videoURL) return;
+ if(!currentMedia) return;
 
- const button = $("download");
- button.disabled = true;
-
- message("กำลังเตรียมดาวน์โหลด...");
+ downloadBtn.disabled = true;
+ message("กำลังเตรียมไฟล์ดาวน์โหลด...");
 
  try{
-  const response = await fetch(videoURL);
+  const response = await fetch(currentMedia);
 
   if(!response.ok){
    throw new Error("HTTP "+response.status);
@@ -196,33 +319,36 @@ async function downloadVideo(){
 
   const blob = await response.blob();
 
-  if(!blob.type.startsWith("video/") &&
-     !videoType){
-   throw new Error("ไฟล์ไม่ใช่วิดีโอ");
+  if(!blob.type.startsWith("video/")){
+   throw new Error("เซิร์ฟเวอร์ไม่ได้ส่งไฟล์วิดีโอ");
   }
 
-  const objectURL = URL.createObjectURL(blob);
+  const blobURL = URL.createObjectURL(blob);
   const a = document.createElement("a");
 
-  a.href = objectURL;
-  a.download = "video." +
-   (videoURL.match(/\.(mp4|webm|mov|m4v|ogv)(?:$|[?#])/i)?.[1] || "mp4");
+  const path = new URL(currentMedia).pathname;
+  const name = path.split("/").pop() || "video.mp4";
+
+  a.href = blobURL;
+  a.download = name;
 
   document.body.appendChild(a);
   a.click();
   a.remove();
 
-  setTimeout(()=>URL.revokeObjectURL(objectURL),60000);
+  setTimeout(()=>{
+   URL.revokeObjectURL(blobURL);
+  },60000);
 
-  message("เริ่มดาวน์โหลดแล้ว");
+  message("เริ่มดาวน์โหลดไฟล์แล้ว");
 
  }catch(error){
   message(
-   "ดาวน์โหลดไม่ได้: "+error.message+
-   " กรุณาตรวจสอบ CORS หรือใช้ช่องทางดาวน์โหลดจากเซิร์ฟเวอร์ต้นทาง"
+   "ดาวน์โหลดไม่สำเร็จ: "+error.message+
+   " กรุณาตรวจสอบ CORS หรือใช้ปุ่มดาวน์โหลดของเว็บไซต์ต้นทาง"
   );
  }finally{
-  button.disabled = false;
+  downloadBtn.disabled = false;
  }
 }
 </script>
