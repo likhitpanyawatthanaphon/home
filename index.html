@@ -1,0 +1,493 @@
+
+
+<!DOCTYPE html>
+
+<html lang="th">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<meta name="theme-color" content="#101827">
+
+<title>Thanaphon Video Downloader</title>
+
+<style>
+
+* {
+
+  box-sizing: border-box;
+
+}
+
+body {
+
+  margin: 0;
+
+  font-family: Arial, sans-serif;
+
+  background: linear-gradient(135deg,#101827,#172c49);
+
+  color: white;
+
+  min-height: 100vh;
+
+}
+
+header {
+
+  text-align: center;
+
+  padding: 35px 15px 20px;
+
+}
+
+.logo {
+
+  font-size: 42px;
+
+}
+
+header h1 {
+
+  font-size: 25px;
+
+  margin: 12px 0;
+
+}
+
+header p {
+
+  color: #a9bad2;
+
+  font-size: 14px;
+
+}
+
+.container {
+
+  max-width: 600px;
+
+  margin: 20px auto;
+
+  padding: 20px;
+
+}
+
+.panel {
+
+  background: #ffffff;
+
+  color: #172033;
+
+  border-radius: 20px;
+
+  padding: 25px;
+
+  box-shadow: 0 15px 50px #0005;
+
+}
+
+.panel h2 {
+
+  margin-top: 0;
+
+  font-size: 21px;
+
+}
+
+input {
+
+  width: 100%;
+
+  padding: 16px;
+
+  border: 1px solid #ccd5e1;
+
+  border-radius: 10px;
+
+  font-size: 15px;
+
+  margin: 12px 0;
+
+  outline: none;
+
+}
+
+input:focus {
+
+  border-color: #2563eb;
+
+}
+
+button {
+
+  width: 100%;
+
+  padding: 15px;
+
+  border: none;
+
+  border-radius: 10px;
+
+  background: #2563eb;
+
+  color: white;
+
+  font-size: 16px;
+
+  font-weight: bold;
+
+  cursor: pointer;
+
+  margin-top: 10px;
+
+}
+
+button:disabled {
+
+  opacity: .5;
+
+}
+
+.download {
+
+  background: #059669;
+
+}
+
+video {
+
+  width: 100%;
+
+  border-radius: 12px;
+
+  margin-top: 20px;
+
+  background: #000;
+
+}
+
+#result {
+
+  margin-top: 15px;
+
+  font-size: 14px;
+
+  line-height: 1.7;
+
+  overflow-wrap: anywhere;
+
+}
+
+.notice {
+
+  background: #eff6ff;
+
+  color: #1e40af;
+
+  padding: 13px;
+
+  border-radius: 10px;
+
+  margin-top: 15px;
+
+  font-size: 13px;
+
+  line-height: 1.6;
+
+}
+
+footer {
+
+  text-align: center;
+
+  padding: 25px;
+
+  color: #9caec5;
+
+  font-size: 12px;
+
+}
+
+.hidden {
+
+  display: none;
+
+}
+
+</style>
+
+</head>
+
+<body>
+
+<header>
+
+  <div class="logo">🎬</div>
+
+  <h1>THANAPHON VIDEO DOWNLOADER</h1>
+
+  <p>Online Video Downloader</p>
+
+</header>
+
+<div class="container">
+
+  <div class="panel">
+
+    <h2>ดาวน์โหลดวิดีโอ</h2>
+
+    <p>วางลิงก์ไฟล์วิดีโอที่ต้องการ</p>
+
+    <input
+
+      type="url"
+
+      id="videoURL"
+
+      placeholder="https://example.com/video.mp4"
+
+      autocomplete="url"
+
+    >
+
+    <button id="checkBtn" onclick="checkVideo()">
+
+      🔍 ตรวจสอบวิดีโอ
+
+    </button>
+
+    <div id="result" aria-live="polite"></div>
+
+    <video id="preview" class="hidden" controls playsinline></video>
+
+    <button id="downloadBtn"
+
+      class="download hidden"
+
+      onclick="downloadVideo()">
+
+      ⬇ ดาวน์โหลดวิดีโอ
+
+    </button>
+
+    <div class="notice">
+
+      หมายเหตุ: ใช้งานกับลิงก์ไฟล์วิดีโอโดยตรง
+
+      เช่น MP4, WebM หรือไฟล์ที่เซิร์ฟเวอร์อนุญาตให้เข้าถึง
+
+      ไม่รองรับการดึงวิดีโอจากหน้าเว็บไซต์ที่ป้องกันการดาวน์โหลด
+
+    </div>
+
+  </div>
+
+</div>
+
+<footer>
+
+  © 2026 THANAPHON VIDEO DOWNLOADER
+
+</footer>
+
+<script>
+
+let currentURL = "";
+
+let objectURL = "";
+
+function showMessage(message) {
+
+  document.getElementById("result").textContent = message;
+
+}
+
+function resetPreview() {
+
+  const preview = document.getElementById("preview");
+
+  preview.pause();
+
+  preview.removeAttribute("src");
+
+  preview.load();
+
+  preview.classList.add("hidden");
+
+  document.getElementById("downloadBtn")
+
+    .classList.add("hidden");
+
+  if (objectURL) {
+
+    URL.revokeObjectURL(objectURL);
+
+    objectURL = "";
+
+  }
+
+}
+
+function checkVideo() {
+
+  const input = document.getElementById("videoURL");
+
+  const url = input.value.trim();
+
+  resetPreview();
+
+  currentURL = "";
+
+  let parsed;
+
+  try {
+
+    parsed = new URL(url);
+
+    if (!["http:", "https:"].includes(parsed.protocol)) {
+
+      throw new Error("Invalid protocol");
+
+    }
+
+  } catch {
+
+    showMessage("กรุณาใส่ URL ที่ถูกต้อง");
+
+    return;
+
+  }
+
+  currentURL = parsed.href;
+
+  const preview = document.getElementById("preview");
+
+  preview.src = currentURL;
+
+  preview.classList.remove("hidden");
+
+  preview.onerror = () => {
+
+    preview.classList.add("hidden");
+
+    showMessage(
+
+      "ไม่สามารถแสดงตัวอย่างได้ อาจเป็นเพราะเว็บไซต์ต้นทางไม่อนุญาตให้เข้าถึง"
+
+    );
+
+  };
+
+  preview.onloadedmetadata = () => {
+
+    showMessage(
+
+      "ตรวจพบวิดีโอ สามารถทดลองเล่นตัวอย่างได้"
+
+    );
+
+    document.getElementById("downloadBtn")
+
+      .classList.remove("hidden");
+
+  };
+
+  showMessage(
+
+    "กำลังตรวจสอบไฟล์ หากเซิร์ฟเวอร์อนุญาตจะสามารถแสดงตัวอย่างได้"
+
+  );
+
+}
+
+async function downloadVideo() {
+
+  if (!currentURL) return;
+
+  const btn = document.getElementById("downloadBtn");
+
+  btn.disabled = true;
+
+  showMessage("กำลังเตรียมไฟล์ดาวน์โหลด...");
+
+  try {
+
+    const response = await fetch(currentURL);
+
+    if (!response.ok) {
+
+      throw new Error("Download unavailable");
+
+    }
+
+    const type = response.headers.get("content-type") || "";
+
+    if (!type.startsWith("video/") &&
+
+        type !== "application/octet-stream") {
+
+      throw new Error("Not a video file");
+
+    }
+
+    const blob = await response.blob();
+
+    const blobURL = URL.createObjectURL(blob);
+
+    const a = document.createElement("a");
+
+    a.href = blobURL;
+
+    a.download = getFilename(currentURL);
+
+    document.body.appendChild(a);
+
+    a.click();
+
+    a.remove();
+
+    setTimeout(() => URL.revokeObjectURL(blobURL), 60000);
+
+    showMessage("เริ่มดาวน์โหลดไฟล์แล้ว");
+
+  } catch (error) {
+
+    showMessage(
+
+      "ไม่สามารถดาวน์โหลดผ่านหน้านี้ได้ เนื่องจากเว็บไซต์ต้นทางอาจจำกัด CORS หรือไม่อนุญาตให้ดาวน์โหลด กรุณาใช้ช่องทางดาวน์โหลดที่เว็บไซต์ต้นทางจัดให้"
+
+    );
+
+  } finally {
+
+    btn.disabled = false;
+
+  }
+
+}
+
+function getFilename(url) {
+
+  try {
+
+    const name = new URL(url).pathname.split("/").pop();
+
+    return name || "video.mp4";
+
+  } catch {
+
+    return "video.mp4";
+
+  }
+
+}
+
+</script>
+
+</body>
+
+</html>
